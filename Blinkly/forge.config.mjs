@@ -10,6 +10,7 @@ import { FuseV1Options, FuseVersion } from '@electron/fuses';
 const config = {
   packagerConfig: {
     asar: true,
+    extraResource: ['assets/tray.png'],
   },
   rebuildConfig: {},
   makers: [

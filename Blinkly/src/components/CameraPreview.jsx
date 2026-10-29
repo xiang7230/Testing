@@ -58,6 +58,8 @@ export default function CameraPreview({
     let handTracker = null;
     let blinkDetector = createBlinkDetector();
 
+    stoppedRef.current = false;
+
     const rubbingDetector = new EyeRubbingDetector();
     const distanceDetector = new DistanceDetector({
       faceWidthCm: 15,
@@ -125,7 +127,9 @@ export default function CameraPreview({
         setStatus('RUNNING');
         callbacksRef.current.onReady?.();
 
-        frameId = requestAnimationFrame(processFrame);
+        frameTimer = setInterval(() => {
+          processFrame(performance.now());
+        }, FRAME_INTERVAL_MS);
       } catch (err) {
         if (cancelled) return;
 
@@ -139,8 +143,6 @@ export default function CameraPreview({
 
     function processFrame(timestamp) {
       if (cancelled || stoppedRef.current) return;
-
-      frameId = requestAnimationFrame(processFrame);
 
       if (
         timestamp - lastProcessed <
@@ -258,9 +260,9 @@ export default function CameraPreview({
         const distance = calibration.complete
           ? distanceDetector.update(common)
           : {
-              viewingDistanceCm: null,
-              relativeDistanceStatus: 'UNKNOWN',
-            };
+            viewingDistanceCm: null,
+            relativeDistanceStatus: 'UNKNOWN',
+          };
 
         const result = validateDetection({
           timestamp: Date.now(),
@@ -310,7 +312,7 @@ export default function CameraPreview({
         setStatus('ERROR');
         callbacksRef.current.onError?.(message);
         stoppedRef.current = true;
-        cancelAnimationFrame(frameId);
+        clearInterval(frameTimer);
         handTracker?.close();
         handTracker = null;
         faceTracker.stop();
@@ -354,7 +356,7 @@ export default function CameraPreview({
       cancelled = true;
 
       clearInterval(brightnessTimer);
-      cancelAnimationFrame(frameId);
+      clearInterval(frameTimer);
 
       handTracker?.close();
       faceTracker.stop();
@@ -543,11 +545,11 @@ export default function CameraPreview({
 
           {detection?.relativeDistanceStatus ===
             'TOO_CLOSE' && (
-            <p role="alert">
-              You may be sitting too close to
-              the screen. Consider moving back.
-            </p>
-          )}
+              <p role="alert">
+                You may be sitting too close to
+                the screen. Consider moving back.
+              </p>
+            )}
 
           <article className="brightness-card">
             <div>
@@ -555,7 +557,7 @@ export default function CameraPreview({
 
               <strong>
                 {brightness?.supported &&
-                Number.isFinite(brightness.value)
+                  Number.isFinite(brightness.value)
                   ? `${brightness.value}%`
                   : 'Unavailable'}
               </strong>

@@ -5,4 +5,8 @@ export const IPC_CHANNELS = Object.freeze({
   saveEvent: 'events:save', saveMeasurements: 'measurements:save',
   getSessions: 'sessions:list', getSessionDetails: 'sessions:details', deleteSession: 'sessions:delete',
   showNotification: 'system:notify', getBrightness: 'brightness:get', setBrightness: 'brightness:set',
+  isWindowVisible: 'window:is-visible',
+  quitApp: 'app:quit',
+  prepareQuit: 'app:prepare-quit',
+  quitReady: 'app:quit-ready',
 });

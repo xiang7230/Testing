@@ -51,9 +51,20 @@ export default function SettingsPanel({
     setError('');
   }
 
-  // Original save behaviour retained.
+
   async function savePreferences(event) {
     event.preventDefault();
+
+    if (brightnessBusy || saving) return;
+
+    // Require the user to confirm the hardware change.
+    if (originalBrightness !== null) {
+      setError(
+        'Please choose Keep or Undo before saving preferences.'
+      );
+      return;
+    }
+
     setSaving(true);
     setError('');
 
@@ -62,12 +73,13 @@ export default function SettingsPanel({
       onClose();
     } catch (saveError) {
       setError(
-        saveError.message || 'Could not save your preferences.',
+        saveError.message || 'Could not save your preferences.'
       );
     } finally {
       setSaving(false);
     }
   }
+
 
 
   async function applyBrightness() {
@@ -145,12 +157,26 @@ export default function SettingsPanel({
     setBrightnessMessage('Brightness change kept.');
   }
 
+  function closeSettings() {
+    if (brightnessBusy || saving) return;
+
+    if (originalBrightness !== null) {
+      setError(
+        'Please choose Keep or Undo before closing Settings.'
+      );
+      return;
+    }
+
+    onClose();
+  }
 
   return (
     <div
       className="dialog-backdrop"
       onMouseDown={(event) => {
-        if (event.target === event.currentTarget) onClose();
+        if (event.target === event.currentTarget) {
+          closeSettings();
+        }
       }}
     >
       <section
@@ -168,7 +194,8 @@ export default function SettingsPanel({
           <button
             aria-label="Close preferences"
             className="icon-button"
-            onClick={onClose}
+            onClick={closeSettings}
+            disabled={brightnessBusy || saving}
             type="button"
           >
             ×
@@ -337,14 +364,23 @@ export default function SettingsPanel({
                 }
               />
 
+
               <PreferenceSwitch
                 checked={draft.brightnessEnabled}
                 label="Brightness suggestions"
                 description="Enable brightness adjustment suggestions."
-                onChange={(value) =>
-                  updateSetting('brightnessEnabled', value)
-                }
+                onChange={(value) => {
+                  if (originalBrightness !== null || brightnessBusy) {
+                    setError(
+                      'Choose Keep or Undo before changing this setting.'
+                    );
+                    return;
+                  }
+
+                  updateSetting('brightnessEnabled', value);
+                }}
               />
+
             </div>
 
             {/* Only show preferred brightness when enabled */}
@@ -432,14 +468,14 @@ export default function SettingsPanel({
               className="button button--quiet"
               onClick={onClose}
               type="button"
-              disabled={saving}
+              disabled={saving || brightnessBusy}
             >
               Cancel
             </button>
 
             <button
               className="button button--primary"
-              disabled={saving}
+              disabled={saving || brightnessBusy}
               type="submit"
             >
               {saving ? 'Saving…' : 'Save preferences'}

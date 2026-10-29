@@ -101,6 +101,7 @@ export default function BlinklyApp({
 
   const retry = () => runControl(onRetry);
 
+
   async function saveSettings(nextSettings) {
     if (onSaveSettings) {
       await onSaveSettings(nextSettings);
@@ -108,7 +109,18 @@ export default function BlinklyApp({
     setSettings(nextSettings);
   }
 
+  async function openBrightnessSettings() {
+    // First dismiss the alert. Settings should not
+    // compete with the existing modal alert dialog.
+    const dismissed = await runControl(onDismissAlert);
+
+    if (!dismissed) return;
+
+    setSettingsOpen(true);
+  }
+
   return (
+
     <div className="app-shell">
       <header className="topbar">
         <button
@@ -203,20 +215,20 @@ export default function BlinklyApp({
         {screen === 'monitoring' &&
           !liveActive &&
           !(state === 'ON_BREAK' && breakStatus) && (
-          <MonitoringScreen
-            currentBrightness={currentBrightness}
-            detection={detection}
-            elapsedLabel={displayedElapsedLabel}
-            error={error}
-            isPreview={isPreview}
-            onRetry={retry}
-            onStart={() => runControl(onStart)}
-            onStop={endSession}
-            onTakeBreak={() => runControl(onTakeBreak)}
-            pending={pending}
-            state={state}
-          />
-        )}
+            <MonitoringScreen
+              currentBrightness={currentBrightness}
+              detection={detection}
+              elapsedLabel={displayedElapsedLabel}
+              error={error}
+              isPreview={isPreview}
+              onRetry={retry}
+              onStart={() => runControl(onStart)}
+              onStop={endSession}
+              onTakeBreak={() => runControl(onTakeBreak)}
+              pending={pending}
+              state={state}
+            />
+          )}
         {screen === 'profile' && (
           <div className="screen__narrow">
             <UserProfile
@@ -234,6 +246,7 @@ export default function BlinklyApp({
         )}
       </main>
 
+
       {alert && (
         <AlertModal
           key={alert.id}
@@ -243,8 +256,10 @@ export default function BlinklyApp({
           onTakeBreak={takeBreakFromAlert}
           onSnooze={() => runControl(onSnooze)}
           onDismiss={() => runControl(onDismissAlert)}
+          onAdjustBrightness={openBrightnessSettings}
         />
       )}
+
 
       {settingsOpen && (
         <SettingsPanel

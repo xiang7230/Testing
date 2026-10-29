@@ -9,9 +9,11 @@ export default function AlertModal({
   onTakeBreak,
   onSnooze,
   onDismiss,
+  onAdjustBrightness,
 }) {
   const dialogRef = useRef(null);
   const isReminder = alert.type === 'BREAK_REMINDER';
+  const isBrightnessAlert = alert.type === 'BRIGHTNESS';
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -43,6 +45,7 @@ export default function AlertModal({
       <p className="alert-dialog__note">
         Blinkly gives comfort reminders, not medical advice.
       </p>
+
       <div className="alert-dialog__actions" aria-busy={pending}>
         <button
           className="button button--quiet"
@@ -52,6 +55,7 @@ export default function AlertModal({
         >
           {isReminder ? 'Not now' : 'Got it'}
         </button>
+
         <button
           className="button button--quiet"
           type="button"
@@ -60,16 +64,30 @@ export default function AlertModal({
         >
           Snooze {snoozeMinutes} min
         </button>
-        <button
-          className="button button--primary"
-          type="button"
-          disabled={pending}
-          autoFocus
-          onClick={onTakeBreak}
-        >
-          Take a break
-        </button>
+
+        {isBrightnessAlert ? (
+          <button
+            className="button button--primary"
+            type="button"
+            disabled={pending}
+            autoFocus
+            onClick={onAdjustBrightness}
+          >
+            Adjust brightness
+          </button>
+        ) : (
+          <button
+            className="button button--primary"
+            type="button"
+            disabled={pending}
+            autoFocus
+            onClick={onTakeBreak}
+          >
+            Take a break
+          </button>
+        )}
       </div>
+
     </dialog>
   );
 }

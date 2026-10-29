@@ -40,6 +40,8 @@ let mainWindow = null;
 let tray = null;
 let isQuitting = false;
 let quitPromise = null;
+const activeNotifications = new Set();
+
 
 function showBlinkly() {
   if (!mainWindow || mainWindow.isDestroyed()) return;
@@ -185,7 +187,6 @@ function registerHandlers() {
       return { supported: false, shown: false };
     }
 
-    const activeNotifications = new Set();
 
     const notification = new Notification({
       title,
@@ -210,7 +211,6 @@ function registerHandlers() {
       shown: true,
     };
 
-    return { supported: true, shown: true };
   });
 
   handler('getBrightness', getBrightness);

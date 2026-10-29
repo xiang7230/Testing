@@ -450,3 +450,95 @@ test('detections are ignored unless monitoring', async () => {
   t.monitor.recordDetection(createMockDetection({ blinkRate: 1 }), { newBlinks: 3 });
   assert.equal(t.snap().totals.blinks, 0);
 });
+
+
+test('popup mode sends Windows notification when hidden', async () => {
+  const t = setup({
+    settings: { notificationType: 'popup' },
+    api: {
+      isWindowVisible: async () => false,
+    },
+  });
+
+  await t.running();
+
+  t.frames(11_000, {
+    relativeDistanceStatus: 'TOO_CLOSE',
+    viewingDistanceCm: 30,
+  });
+
+  await new Promise((resolve) => setImmediate(resolve));
+  await new Promise((resolve) => setImmediate(resolve));
+
+  const notifications = t.calls.filter(
+    (call) => call.name === 'showNotification',
+  );
+
+  assert.equal(notifications.length, 1);
+  assert.equal(
+    notifications[0].args[0].title,
+    'You may be too close to the screen',
+  );
+
+  // With Issue 1's optional clearing policy enabled:
+  assert.equal(t.snap().alert, null);
+});
+
+
+test('popup mode uses Blinkly alert while visible', async () => {
+  const t = setup({
+    settings: { notificationType: 'popup' },
+    api: {
+      isWindowVisible: async () => true,
+    },
+  });
+
+  await t.running();
+
+  t.frames(11_000, {
+    relativeDistanceStatus: 'TOO_CLOSE',
+    viewingDistanceCm: 30,
+  });
+
+  await new Promise((resolve) => setImmediate(resolve));
+
+  assert.equal(t.snap().alert?.type, 'TOO_CLOSE');
+
+  assert.equal(
+    t.calls.filter(
+      (call) => call.name === 'showNotification',
+    ).length,
+    0,
+  );
+});
+
+
+test('break completion notifies when hidden in popup mode', async () => {
+  const t = setup({
+    settings: {
+      notificationType: 'popup',
+      breakDurationMinutes: 1,
+    },
+    api: {
+      isWindowVisible: async () => false,
+    },
+  });
+
+  await t.running();
+  t.monitor.startBreak();
+
+  t.advance(60_000);
+
+  await new Promise((resolve) => setImmediate(resolve));
+  await new Promise((resolve) => setImmediate(resolve));
+
+  const notifications = t.calls.filter(
+    (call) => call.name === 'showNotification',
+  );
+
+  assert.equal(notifications.length, 1);
+  assert.equal(
+    notifications[0].args[0].title,
+    'Break complete',
+  );
+});

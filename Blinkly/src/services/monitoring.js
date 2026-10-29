@@ -314,10 +314,16 @@ export function createMonitoringController({
     if (state === 'ON_BREAK' && session.break && !session.break.finished) {
       if (n >= session.break.startedAt + session.break.durationMs) {
         session.break.finished = true;
-        notify({
+        const message = {
           title: 'Break complete',
           body: 'Your eye break is over. Resume monitoring when you are ready.',
-        });
+        };
+
+        if (settings.notificationType === 'system') {
+          void notify(message);
+        } else {
+          void notifyWhenHidden(message);
+        }
       }
     }
     emit();
@@ -336,6 +342,33 @@ export function createMonitoringController({
         return false;
       });
   }
+
+
+  async function notifyWhenHidden({ title, body }) {
+    if (!api?.showNotification || !api?.isWindowVisible) {
+      return false;
+    }
+
+    try {
+      const visible = await api.isWindowVisible();
+
+      if (visible) return false;
+
+      const result = await api.showNotification({
+        title,
+        body,
+      });
+
+      return Boolean(result?.shown);
+    } catch (error) {
+      logger.warn?.(
+        'Background notification failed:',
+        error,
+      );
+      return false;
+    }
+  }
+
 
   function showAlert(type, values) {
     const copy = alertCopy(type, values, settings);
@@ -373,37 +406,44 @@ export function createMonitoringController({
       return;
     }
 
+
     if (settings.notificationType !== 'system') {
       session.alert = alert;
 
-      // When the app is hidden, provide a native
-      // notification instead of relying on the
-      // invisible in-app dialog.
-      if (
-        api?.isWindowVisible &&
-        api?.showNotification
-      ) {
+      if (api?.isWindowVisible && api?.showNotification) {
         const owner = session;
 
         Promise.resolve()
           .then(() => api.isWindowVisible())
-          .then((visible) => {
+          .then(async (visible) => {
             if (
               visible ||
               owner !== session ||
-              state !== 'MONITORING'
+              state !== 'MONITORING' ||
+              session.alert?.id !== alert.id
             ) {
               return;
             }
 
-            return api.showNotification({
+            const result = await api.showNotification({
               title: copy.title,
               body: copy.message,
             });
+
+            // Do not show the same informational alert
+            // again when Blinkly is reopened.
+            if (
+              result?.shown &&
+              owner === session &&
+              session.alert?.id === alert.id
+            ) {
+              session.alert = null;
+              emit();
+            }
           })
           .catch((error) => {
             logger.warn?.(
-              'Could not display background notification:',
+              'Background notification failed:',
               error,
             );
           });
@@ -411,6 +451,7 @@ export function createMonitoringController({
 
       return;
     }
+
 
     const owner = session;
     notify({ title: copy.title, body: copy.message }).then((shown) => {

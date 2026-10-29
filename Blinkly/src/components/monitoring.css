@@ -1,0 +1,100 @@
+/* Dev 5: alerts, break timer and background monitoring. */
+
+.alert-dialog {
+  width: min(92vw, 520px);
+  padding: 26px;
+  border: 1px solid var(--color-border, #dcd9ec);
+  border-radius: 18px;
+  background: var(--color-surface, #ffffff);
+  color: var(--color-text, #192336);
+  box-shadow: 0 18px 60px rgb(29 26 58 / 19%);
+}
+
+.alert-dialog::backdrop {
+  background: rgb(25 35 54 / 35%);
+}
+
+.alert-dialog__eyebrow {
+  margin: 0 0 6px;
+  color: var(--color-primary, #6558d7);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.alert-dialog h2 {
+  margin: 0 0 10px;
+  font-size: 22px;
+}
+
+.alert-dialog p {
+  line-height: 1.55;
+}
+
+.alert-dialog__note {
+  color: var(--color-text-muted, #69657e);
+  font-size: 12px;
+}
+
+.alert-dialog__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.alert-dialog--eye_rubbing .alert-dialog__eyebrow,
+.alert-dialog--too_close .alert-dialog__eyebrow {
+  color: #a4501f;
+}
+
+.break-timer__card {
+  margin-top: 22px;
+  padding: 28px;
+  border: 2px solid #efcf9c;
+  border-radius: 18px;
+  background: #fffaf1;
+  text-align: center;
+}
+
+.break-timer__remaining {
+  margin: 0;
+  color: #885b20;
+  font-size: clamp(48px, 9vw, 76px);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.break-timer__progress {
+  width: min(100%, 420px);
+  height: 12px;
+  margin: 18px auto 6px;
+  accent-color: #d89652;
+}
+
+.break-timer__ideas {
+  display: inline-block;
+  margin: 12px 0 0;
+  padding-left: 20px;
+  color: #5c4a2f;
+  line-height: 1.8;
+  text-align: left;
+}
+
+/* Keeps the camera and models running while another screen is shown. */
+.background-monitor {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.monitoring-warning {
+  margin: 12px 0 0;
+  color: #885b20;
+  font-size: 14px;
+}

@@ -1,0 +1,601 @@
+
+/* ==========================================
+   BLINKLY — GLOBAL STYLES
+   ========================================== */
+
+:root {
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: #192336;
+  background: #ffffff;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  min-width: 320px;
+  overflow-x: hidden;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ==========================================
+   BLINKLY — BUTTONS
+   ========================================== */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 12px;
+  border: 1px solid #dcd9ec;
+  padding: 12px 20px;
+  font-weight: 700;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.button--primary {
+  background: #6558d7;
+  border-color: #6558d7;
+  color: white;
+}
+
+.button--primary:hover:not(:disabled) {
+  background: #5144c2;
+  border-color: #5144c2;
+}
+
+.button--large {
+  min-height: 52px;
+  padding: 14px 28px;
+  font-size: 16px;
+}
+
+.button--quiet {
+  background: #ffffff;
+  border-color: #dcd9ec;
+  color: #4b438c;
+}
+
+.button--quiet:hover:not(:disabled) {
+  background: #f3f1ff;
+}
+
+/* ==========================================
+   BLINKLY — APP SHELL
+   ========================================== */
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 100vh;
+  overflow-x: clip;
+  background: #ffffff;
+}
+
+.screen {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+}
+
+.topbar {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+  min-height: 76px;
+  padding: 12px 28px;
+  border-bottom: 1px solid #e8e6f2;
+  background: #ffffff;
+}
+
+/* ==========================================
+   BLINKLY — HOMEPAGE
+   ========================================== */
+
+.home {
+  width: 100%;
+  min-width: 0;
+}
+
+.home__start.button--primary {
+  min-width: 260px;
+  padding: 16px 30px;
+  background: #6558d7;
+  border: 2px solid #6558d7;
+  border-radius: 14px;
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 700;
+  box-shadow: 0 6px 14px rgba(101, 88, 215, 0.15);
+}
+
+.home__start.button--primary:hover:not(:disabled) {
+  background: #5144c2;
+  border-color: #5144c2;
+}
+
+/* ==========================================
+   BLINKLY — MONITORING PAGE
+   ========================================== */
+
+.monitoring {
+  width: min(100%, 1100px);
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 28px 48px;
+}
+
+.monitor-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.monitor-heading h2 {
+  margin: 8px 0;
+  color: #302d4d;
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.monitor-eyebrow {
+  color: #6b648a;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.privacy-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 12px;
+  border-radius: 999px;
+  background: #edf5f2;
+  color: #356b59;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ==========================================
+   SESSION STATUS BANNER
+   ========================================== */
+
+.monitoring .session-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 24px;
+  padding: 20px 24px;
+  border: 1px solid #cae5d3;
+  border-radius: 14px;
+  background: #eaf6ee;
+  color: #286046;
+}
+
+.monitoring .session-banner time {
+  font-size: 28px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================
+   CAMERA PREVIEW
+   ========================================== */
+
+.camera-preview-card {
+  width: 100%;
+  margin: 24px 0;
+  padding: 20px;
+  border: 2px solid #c9c4ee;
+  border-radius: 18px;
+  background: #ffffff;
+}
+
+.camera-preview-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.camera-preview-heading h3 {
+  margin: 0;
+  color: #302d4d;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.camera-preview-badge {
+  border-radius: 999px;
+  padding: 7px 12px;
+  background: #eaf6ee;
+  color: #286046;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.camera-preview-video {
+  display: block;
+  width: 100%;
+  max-width: 560px;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  margin: 0 auto;
+  border-radius: 14px;
+  background: #192336;
+  object-fit: contain;
+  transform: scaleX(-1);
+}
+
+.camera-preview-note {
+  margin: 14px 0 0;
+  color: #69657e;
+  font-size: 13px;
+  text-align: center;
+}
+
+/* ==========================================
+   LIVE MEASUREMENT CARDS
+   ========================================== */
+
+.monitoring .measurements {
+  width: 100%;
+  min-width: 0;
+  margin-top: 24px;
+}
+
+.monitoring .metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+.monitoring .metric-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  min-height: 150px;
+  padding: 22px;
+  border: 2px solid #dcdaf2;
+  border-radius: 18px;
+  background: #f7f8ff;
+}
+
+.monitoring .metric-card > span {
+  color: #526580;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.monitoring .metric-card strong {
+  color: #426399;
+  font-size: clamp(28px, 3vw, 40px);
+  font-weight: 700;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.monitoring .metric-card small {
+  color: #6b7d91;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.monitoring .metric-card .eye-value {
+  font-size: 26px;
+}
+
+/* ==========================================
+   BRIGHTNESS
+   ========================================== */
+
+.monitoring .brightness-card {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #f0dfca;
+  border-radius: 16px;
+  background: #fffaf3;
+}
+
+.monitoring .brightness-card > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.monitoring .brightness-card progress {
+  display: block;
+  width: 100%;
+  height: 12px;
+  margin-top: 16px;
+  accent-color: #d89652;
+}
+
+.monitor-note {
+  color: #6b7d91;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* ==========================================
+   SESSION CONTROLS
+   ========================================== */
+
+.monitoring .session-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 14px;
+  width: 100%;
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid #e6ebf1;
+}
+
+.monitoring .session-actions .end-session {
+  min-width: 170px;
+  padding: 14px 24px;
+  border: 0;
+  border-radius: 12px;
+  background: #5347ba;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.monitoring .session-actions .end-session:hover:not(:disabled) {
+  background: #40359b;
+}
+
+/* ==========================================
+   ERROR MESSAGES
+   ========================================== */
+
+.form-error {
+  color: #b42335;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN
+   ========================================== */
+
+@media (max-width: 900px) {
+  .monitoring {
+    padding: 28px 22px 40px;
+  }
+
+  .topbar {
+    padding: 12px 20px;
+  }
+}
+
+@media (max-width: 700px) {
+  .monitoring {
+    padding: 20px 16px 36px;
+  }
+
+  .monitor-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .monitor-heading h2 {
+    font-size: 24px;
+  }
+
+  .monitoring .metric-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .monitoring .metric-card {
+    min-height: 120px;
+    padding: 18px;
+  }
+
+  .monitoring .session-banner {
+    padding: 16px;
+  }
+
+  .monitoring .session-banner time {
+    font-size: 22px;
+  }
+
+  .camera-preview-card {
+    padding: 14px;
+  }
+
+  .camera-preview-heading {
+    flex-wrap: wrap;
+  }
+
+  .home__start.button--primary {
+    min-width: 0;
+    width: min(100%, 320px);
+  }
+}
+
+
+/* ==========================================
+   CAMERA PREVIEW + RESPONSIVE STATS LAYOUT
+   ========================================== */
+
+.preview-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.preview-toolbar h3 {
+  margin: 0 0 6px;
+  color: #302d4d;
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.preview-toolbar p {
+  margin: 0;
+  color: #69657e;
+  font-size: 13px;
+}
+
+.preview-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 140px;
+  min-height: 42px;
+  padding: 10px 16px;
+  border: 1px solid #c9c4ee;
+  border-radius: 11px;
+  background: #ffffff;
+  color: #5d51c8;
+  font-weight: 700;
+}
+
+.preview-toggle:hover {
+  background: #f3f1ff;
+}
+
+/* Preview and stats side by side */
+
+.monitoring .monitor-layout--preview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  align-items: start;
+  gap: 22px;
+  width: 100%;
+}
+
+/* When preview is hidden, stats fill the page */
+
+.monitoring .monitor-layout--full {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  width: 100%;
+}
+
+/* IMPORTANT: Hidden camera remains in the DOM */
+
+.monitoring .camera-preview-card--hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+/* Remove margins inherited from previous layout */
+
+.monitoring .monitor-layout .camera-preview-card {
+  margin-top: 0;
+}
+
+.monitoring .monitor-layout .measurements {
+  margin-top: 0;
+  width: 100%;
+  min-width: 0;
+}
+
+/* Make video scale to its column */
+
+.monitoring .monitor-layout .camera-preview-video {
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
+}
+
+/* Keep measurement cards responsive */
+
+.monitoring .monitor-layout .metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+/* When preview is hidden, all stats use available width */
+
+.monitoring .monitor-layout--full .measurements {
+  grid-column: 1 / -1;
+}
+
+/* Responsive stacking */
+
+@media (max-width: 900px) {
+  .monitoring .monitor-layout--preview {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .monitoring .monitor-layout .camera-preview-video {
+    max-width: 560px;
+  }
+}
+
+@media (max-width: 600px) {
+  .monitoring .monitor-layout .metric-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .preview-toolbar {
+    align-items: stretch;
+  }
+
+  .preview-toggle {
+    width: 100%;
+  }
+}

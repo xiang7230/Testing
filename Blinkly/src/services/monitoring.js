@@ -348,13 +348,70 @@ export function createMonitoringController({
     // The break reminder needs a choice, so it is always shown in the app.
     if (type === 'BREAK_REMINDER') {
       session.alert = alert;
-      notify({ title: copy.title, body: copy.message });
+
+      if (settings.notificationType === 'system') {
+        notify({
+          title: copy.title,
+          body: copy.message,
+        });
+      } else if (api?.isWindowVisible) {
+        Promise.resolve()
+          .then(() => api.isWindowVisible())
+          .then((visible) => {
+            if (!visible && state === 'MONITORING') {
+              return api.showNotification?.({
+                title: copy.title,
+                body: copy.message,
+              });
+            }
+          })
+          .catch((error) => {
+            logger.warn?.('Reminder notification failed:', error);
+          });
+      }
+
       return;
     }
+
     if (settings.notificationType !== 'system') {
       session.alert = alert;
+
+      // When the app is hidden, provide a native
+      // notification instead of relying on the
+      // invisible in-app dialog.
+      if (
+        api?.isWindowVisible &&
+        api?.showNotification
+      ) {
+        const owner = session;
+
+        Promise.resolve()
+          .then(() => api.isWindowVisible())
+          .then((visible) => {
+            if (
+              visible ||
+              owner !== session ||
+              state !== 'MONITORING'
+            ) {
+              return;
+            }
+
+            return api.showNotification({
+              title: copy.title,
+              body: copy.message,
+            });
+          })
+          .catch((error) => {
+            logger.warn?.(
+              'Could not display background notification:',
+              error,
+            );
+          });
+      }
+
       return;
     }
+
     const owner = session;
     notify({ title: copy.title, body: copy.message }).then((shown) => {
       // Fall back to the in-app pop-up when the OS cannot show it.
@@ -432,8 +489,8 @@ export function createMonitoringController({
     checkHeld(
       'lowBlinkSince',
       faceOn &&
-        Number.isFinite(detection.blinkRate) &&
-        detection.blinkRate < blinkRule.thresholdPerMinute,
+      Number.isFinite(detection.blinkRate) &&
+      detection.blinkRate < blinkRule.thresholdPerMinute,
       'LOW_BLINK_RATE',
       { blinkRate: detection.blinkRate },
       { blinkRate: detection.blinkRate },

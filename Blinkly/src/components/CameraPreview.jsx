@@ -52,9 +52,10 @@ export default function CameraPreview({
   const callbacksRef = useRef({});
   callbacksRef.current = { onReady, onError, onDetection, onBrightness };
 
+
   useEffect(() => {
     let cancelled = false;
-    let frameId = null;
+    let frameTimer = null;
     let handTracker = null;
     let blinkDetector = createBlinkDetector();
 

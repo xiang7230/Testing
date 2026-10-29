@@ -185,7 +185,30 @@ function registerHandlers() {
       return { supported: false, shown: false };
     }
 
-    new Notification({ title, body }).show();
+    const activeNotifications = new Set();
+
+    const notification = new Notification({
+      title,
+      body,
+      silent: true,
+    });
+
+    activeNotifications.add(notification);
+
+    notification.on('close', () => {
+      activeNotifications.delete(notification);
+    });
+
+    notification.on('failed', () => {
+      activeNotifications.delete(notification);
+    });
+
+    notification.show();
+
+    return {
+      supported: true,
+      shown: true,
+    };
 
     return { supported: true, shown: true };
   });
@@ -277,4 +300,4 @@ app.on('will-quit', () => {
 
 // Do not automatically quit when all windows are closed.
 // The tray controls application termination.
-app.on('window-all-closed', () => {});
+app.on('window-all-closed', () => { });

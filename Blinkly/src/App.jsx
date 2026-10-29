@@ -47,6 +47,32 @@ export default function App() {
     return () => { cancelled = true; };
   }, []);
 
+
+  useEffect(() => {
+    if (!window.Blinkly?.onPrepareQuit) return;
+
+    return window.Blinkly.onPrepareQuit(async () => {
+      try {
+        const state = monitor.getSnapshot().state;
+
+        if (
+          state === 'MONITORING' ||
+          state === 'PAUSED' ||
+          state === 'ON_BREAK'
+        ) {
+          await monitor.endSession();
+        }
+
+        await monitor.flush();
+      } catch (error) {
+        console.error('Quit cleanup failed:', error);
+      } finally {
+        window.Blinkly.quitReady();
+      }
+    });
+  }, [monitor]);
+
+
   async function saveSettings(next) {
     const valid = validateSettings(next);
 

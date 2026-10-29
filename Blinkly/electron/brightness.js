@@ -60,6 +60,69 @@ if let library = library, let symbol = dlsym(library, "DisplayServicesGetBrightn
   }
 }
 
-export function setBrightness(_value) {
-  throw new Error('Brightness adjustment is not supported in this build');
+
+export async function setBrightness(value) {
+  if (
+    !Number.isInteger(value) ||
+    value < 0 ||
+    value > 100
+  ) {
+    throw new Error('Brightness must be an integer from 0 to 100');
+  }
+
+  if (process.platform !== 'win32') {
+    return {
+      supported: false,
+      value: null,
+      reason: 'Brightness adjustment is not supported on this platform.',
+    };
+  }
+
+  const command = [
+    '$monitor = Get-CimInstance -Namespace root/WMI',
+    '-ClassName WmiMonitorBrightnessMethods',
+    '-ErrorAction Stop',
+    '| Where-Object Active',
+    '| Select-Object -First 1;',
+    'if ($null -eq $monitor) { throw "No supported display" };',
+    '$result = Invoke-CimMethod -InputObject $monitor',
+    '-MethodName WmiSetBrightness',
+    `-Arguments @{ Brightness = [byte]${value}; Timeout = [uint32]0 }`,
+    '-ErrorAction Stop;',
+    'if ($result.ReturnValue -ne 0) { throw "Brightness write failed" }',
+  ].join(' ');
+
+  try {
+    await run(
+      'powershell.exe',
+      [
+        '-NoProfile',
+        '-NonInteractive',
+        '-Command',
+        command,
+      ],
+      { timeout: 15000 },
+    );
+
+    const result = await getBrightness();
+
+    if (!result.supported) {
+      return {
+        supported: false,
+        value: null,
+        reason: 'Brightness changed but could not be verified.',
+      };
+    }
+
+    return {
+      supported: true,
+      value: result.value,
+    };
+  } catch (error) {
+    return {
+      supported: false,
+      value: null,
+      reason: 'Unable to adjust this display through Windows WMI.',
+    };
+  }
 }

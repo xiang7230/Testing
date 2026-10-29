@@ -39,6 +39,9 @@ export default function SettingsPanel({
   const [draft, setDraft] = useState(settings);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
+  const [brightnessBusy, setBrightnessBusy] = useState(false);
+  const [originalBrightness, setOriginalBrightness] = useState(null);
+  const [brightnessMessage, setBrightnessMessage] = useState('');
 
   function updateSetting(name, value) {
     setDraft((current) => ({
@@ -65,6 +68,83 @@ export default function SettingsPanel({
       setSaving(false);
     }
   }
+
+
+  async function applyBrightness() {
+    setBrightnessBusy(true);
+    setBrightnessMessage('');
+
+    try {
+      const api = window.Blinkly;
+
+      if (!api?.getBrightness || !api?.setBrightness) {
+        throw new Error('Brightness control is unavailable.');
+      }
+
+      const current = await api.getBrightness();
+
+      if (!current.supported) {
+        throw new Error(
+          current.reason || 'This display does not support brightness adjustment.'
+        );
+      }
+
+      const result = await api.setBrightness(
+        draft.preferredBrightness
+      );
+
+      if (!result.supported) {
+        throw new Error(
+          result.reason || 'Could not change brightness.'
+        );
+      }
+
+      // Preserve the initial value even when Apply
+      // is clicked multiple times.
+      setOriginalBrightness((previous) =>
+        previous ?? current.value
+      );
+
+      setBrightnessMessage(
+        `Brightness changed to ${result.value}%.`
+      );
+    } catch (err) {
+      setBrightnessMessage(err.message);
+    } finally {
+      setBrightnessBusy(false);
+    }
+  }
+
+  async function undoBrightness() {
+    if (originalBrightness === null) return;
+
+    setBrightnessBusy(true);
+
+    try {
+      const result = await window.Blinkly.setBrightness(
+        originalBrightness
+      );
+
+      if (!result.supported) {
+        throw new Error(
+          result.reason || 'Unable to restore brightness.'
+        );
+      }
+
+      setOriginalBrightness(null);
+      setBrightnessMessage('Original brightness restored.');
+    } catch (err) {
+      setBrightnessMessage(err.message);
+    } finally {
+      setBrightnessBusy(false);
+    }
+  }
+
+  function keepBrightness() {
+    setOriginalBrightness(null);
+    setBrightnessMessage('Brightness change kept.');
+  }
+
 
   return (
     <div
@@ -300,6 +380,41 @@ export default function SettingsPanel({
                   Moving this slider changes your preference,
                   not the screen brightness immediately.
                 </p>
+
+                <div className="brightness-actions">
+                  <button
+                    type="button"
+                    disabled={brightnessBusy}
+                    onClick={applyBrightness}
+                  >
+                    Apply brightness
+                  </button>
+
+                  {originalBrightness !== null && (
+                    <>
+                      <button
+                        type="button"
+                        disabled={brightnessBusy}
+                        onClick={keepBrightness}
+                      >
+                        Keep
+                      </button>
+
+                      <button
+                        type="button"
+                        disabled={brightnessBusy}
+                        onClick={undoBrightness}
+                      >
+                        Undo
+                      </button>
+                    </>
+                  )}
+                </div>
+
+                {brightnessMessage && (
+                  <p role="status">{brightnessMessage}</p>
+                )}
+
               </div>
             )}
 

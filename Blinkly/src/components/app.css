@@ -598,7 +598,7 @@
   margin: 24px 0 0;
 }
 
-.user-profile__details > div {
+.user-profile__details>div {
   display: grid;
   grid-template-columns: minmax(100px, 1fr) minmax(0, 2fr);
   gap: 16px;
@@ -667,7 +667,7 @@
   line-height: 1.45;
 }
 
-.settings-number-grid > .settings-field {
+.settings-number-grid>.settings-field {
   min-width: 0;
 }
 
@@ -727,4 +727,29 @@
   .monitoring {
     padding-top: 20px;
   }
+}
+
+.brightness-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.brightness-actions button {
+  padding: 9px 14px;
+  border: 1px solid #bbb7d9;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #292540;
+  cursor: pointer;
+}
+
+.brightness-actions button:hover {
+  background: #f2efff;
+}
+
+.brightness-actions button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
